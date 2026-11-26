@@ -1,0 +1,223 @@
+{
+  "routines": [
+    {
+      "id": "1",
+      "title": "HIIT Quema Grasa en Casa",
+      "category": "HIIT",
+      "difficulty": "Media",
+      "duration": 25,
+      "rounds": 4,
+      "description": "Circuito de intervalos de alta intensidad sin equipo, ideal para activar el metabolismo y mejorar la resistencia cardiovascular en poco tiempo.",
+      "exercises": [
+        { "name": "Jumping jacks", "reps": "40 seg" },
+        { "name": "Burpees sin flexión", "reps": "12 reps" },
+        { "name": "Escaladores (mountain climbers)", "reps": "30 seg" }
+      ],
+      "steps": [
+        "Realiza 4 minutos de movilidad articular antes de empezar.",
+        "Ejecuta cada ejercicio seguido con 20 segundos de transición.",
+        "Descansa 90 segundos al terminar cada ronda y repite 4 veces."
+      ],
+      "favorite": false,
+      "createdAt": "2026-11-18T08:00:00.000Z",
+      "trainer": {
+        "name": "Camila Restrepo",
+        "bio": "Entrenadora funcional certificada en Medellín.",
+        "email": "camila.restrepo@rutafit.com"
+      }
+    },
+     
+
+    {
+      "id": "2",
+      "title": "Fuerza Tren Inferior Sin Pesas",
+      "category": "Fuerza",
+      "difficulty": "Media",
+      "duration": 35,
+      "rounds": 4,
+      "description": "Rutina enfocada en cuádriceps, glúteos e isquiotibiales usando únicamente el peso corporal y controlando la fase excéntrica de cada repetición.",
+      "exercises": [
+        { "name": "Sentadilla profunda controlada", "reps": "15 reps" },
+        { "name": "Zancadas alternas", "reps": "12 por pierna" },
+        { "name": "Puente de glúteo a una pierna", "reps": "12 por lado" }
+      ],
+      "steps": [
+        "Activa caderas y tobillos durante 5 minutos.",
+        "Baja en 3 segundos en cada sentadilla manteniendo la espalda neutra.",
+        "Descansa 60 segundos entre series."
+      ],
+      "favorite": false,
+      "createdAt": "2026-11-19T09:30:00.000Z",
+      "trainer": {
+        "name": "Andrés Mejía",
+        "bio": "Preparador físico especializado en calistenia.",
+        "email": "andres.mejia@rutafit.com"
+      }
+    },
+
+
+    {
+      "id": "3",
+      "title": "Movilidad Matutina Express",
+      "category": "Movilidad",
+      "difficulty": "Fácil",
+      "duration": 15,
+      "rounds": 2,
+      "description": "Secuencia suave para despertar columna, caderas y hombros al iniciar el día.",
+      "exercises": [
+        { "name": "Gato-camello", "reps": "10 reps" },
+        { "name": "Rotación torácica en cuadrupedia", "reps": "8 por lado" },
+        { "name": "Estiramiento 90/90 de cadera", "reps": "45 seg por lado" }
+      ],
+      "steps": [
+        "Respira profundo por la nariz en cada transición.",
+        "Evita rebotes y mantén el rango de movimiento sin dolor."
+      ],
+      "favorite": false,
+      "createdAt": "2026-11-20T07:00:00.000Z",
+      "trainer": {
+        "name": "Valentina Ríos",
+        "bio": "Fisioterapeuta y coach de movilidad.",
+        "email": "valentina.rios@rutafit.com"
+      }
+    },
+
+     
+    {
+      "id": "4",
+      "title": "Core de Acero en 20 Minutos",
+      "category": "Core",
+      "difficulty": "Media",
+      "duration": 20,
+      "rounds": 3,
+      "description": "Trabajo completo de abdomen profundo, oblicuos y zona lumbar para ganar estabilidad postural y proteger la espalda en otros entrenamientos.",
+      "exercises": [
+        { "name": "Plancha frontal", "reps": "45 seg" },
+        { "name": "Dead bug alterno", "reps": "14 reps" },
+        { "name": "Plancha lateral", "reps": "30 seg por lado" }
+      ],
+      "steps": [
+        "Pega la zona lumbar al suelo durante el dead bug.",
+        "Mantén glúteos y abdomen firmes en todas las planchas.",
+        "Descansa 45 segundos entre rondas."
+      ],
+      "favorite": false,
+      "createdAt": "2026-11-21T16:15:00.000Z",
+      "trainer": {
+        "name": "Santiago Pardo",
+        "bio": "Entrenador personal y atleta híbrido.",
+        "email": "santiago.pardo@rutafit.com"
+      }
+    },
+
+
+    {
+      "id": "5",
+      "title": "Cardio Continuo de Bajo Impacto",
+      "category": "Cardio",
+      "difficulty": "Fácil",
+      "duration": 30,
+      "rounds": 3,
+      "description": "Sesión aeróbica sin saltos pensada para principiantes o días de recuperación activa.",
+      "exercises": [
+        { "name": "Marcha rápida con elevación de rodillas", "reps": "2 min" },
+        { "name": "Paso lateral con toque", "reps": "90 seg" },
+        { "name": "Boxeo de sombra ligero", "reps": "2 min" }
+      ],
+      "steps": [
+        "Mantén un ritmo donde puedas hablar frases cortas.",
+        "Hidrátate brevemente al finalizar cada bloque de 3 ejercicios."
+      ],
+      "favorite": false,
+      "createdAt": "2026-11-22T11:00:00.000Z",
+      "trainer": {
+        "name": "Camila Restrepo",
+        "bio": "Entrenadora funcional certificada en Medellín.",
+        "email": "camila.restrepo@rutafit.com"
+      }
+    },
+
+
+    {
+      "id": "6",
+      "title": "Empuje y Tracción Calistenia Pro",
+      "category": "Fuerza",
+      "difficulty": "Difícil",
+      "duration": 45,
+      "rounds": 5,
+      "description": "Entrenamiento avanzado de tren superior con variaciones exigentes de flexiones, fondos y dominadas para desarrollar fuerza máxima y control corporal.",
+      "exercises": [
+        { "name": "Dominadas estrictas", "reps": "8 reps" },
+        { "name": "Flexiones en pica (pike push-ups)", "reps": "10 reps" },
+        { "name": "Fondos en paralelas", "reps": "12 reps" }
+      ],
+      "steps": [
+        "Calienta muñecas, codos y manguito rotador durante 7 minutos.",
+        "Controla cada bajada en 2 segundos sin balancear las piernas.",
+        "Descansa 2 minutos completos entre rondas."
+      ],
+      "favorite": false,
+      "createdAt": "2026-11-23T17:45:00.000Z",
+      "trainer": {
+        "name": "Andrés Mejía",
+        "bio": "Preparador físico especializado en calistenia.",
+        "email": "andres.mejia@rutafit.com"
+      }
+    },
+
+
+    {
+      "id": "7",
+      "title": "Tabata Metabólico Extremo",
+      "category": "HIIT",
+      "difficulty": "Difícil",
+      "duration": 24,
+      "rounds": 6,
+      "description": "Intervalos exigentes de 20 segundos a máxima velocidad por 10 segundos de pausa para llevar la capacidad anaeróbica al límite.",
+      "exercises": [
+        { "name": "Sentadilla con salto", "reps": "20 seg" },
+        { "name": "Burpees completos", "reps": "20 seg" },
+        { "name": "Sprints en el sitio", "reps": "20 seg" }
+      ],
+      "steps": [
+        "Realiza un calentamiento dinámico de 5 minutos antes del primer intervalo.",
+        "Da el máximo esfuerzo en los 20 segundos activos y respira hondo en los 10 segundos de pausa.",
+        "Camina suavemente 3 minutos al finalizar para bajar pulsaciones."
+      ],
+      "favorite": false,
+      "createdAt": "2026-11-24T18:20:00.000Z",
+      "trainer": {
+        "name": "Santiago Pardo",
+        "bio": "Entrenador personal y atleta híbrido.",
+        "email": "santiago.pardo@rutafit.com"
+      }
+    },
+
+    
+    {
+      "id": "8",
+      "title": "Descompresión de Espalda y Cadera",
+      "category": "Movilidad",
+      "difficulty": "Fácil",
+      "duration": 18,
+      "rounds": 2,
+      "description": "Rutina restaurativa ideal después de jornadas largas frente al computador, enfocada en liberar tensión lumbar y mejorar la postura.",
+      "exercises": [
+        { "name": "Postura del niño con alcance lateral", "reps": "45 seg por lado" },
+        { "name": "Estiramiento de psoas en zancada baja", "reps": "45 seg por pierna" },
+        { "name": "Torsión espinal acostado", "reps": "40 seg por lado" }
+      ],
+      "steps": [
+        "Usa una colchoneta o tapete cómodo.",
+        "Exhala lento mientras profundizas suavemente en cada estiramiento."
+      ],
+      "favorite": false,
+      "createdAt": "2026-11-25T19:00:00.000Z",
+      "trainer": {
+        "name": "Valentina Ríos",
+        "bio": "Fisioterapeuta y coach de movilidad.",
+        "email": "valentina.rios@rutafit.com"
+      }
+    }
+  ]
+}
