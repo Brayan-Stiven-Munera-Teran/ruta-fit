@@ -40,7 +40,13 @@ function FavoritesPage() {
   }
 
   return (
-    <section className="py-10">
+    <>
+      <title>Favoritas | Ruta Fit</title>
+      <meta
+        name="description"
+        content="Consulta tus rutinas de ejercicio guardadas como favoritas en Ruta Fit."
+      />
+      <section className="py-10">
       <div className="mx-auto max-w-screen-2xl px-6 sm:px-8 lg:px-12">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
@@ -85,6 +91,7 @@ function FavoritesPage() {
         )}
       </div>
     </section>
+    </>
   )
 }
 

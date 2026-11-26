@@ -3,7 +3,9 @@ import { FaExclamationTriangle } from 'react-icons/fa'
 
 function NotFoundPage() {
   return (
-    <section className="flex flex-col items-center justify-center px-4 py-24 text-center">
+    <>
+      <title>404 · Página no encontrada | Ruta Fit</title>
+      <section className="flex flex-col items-center justify-center px-4 py-24 text-center">
       <FaExclamationTriangle
         className="mb-4 h-16 w-16 text-amber-500"
         aria-hidden="true"
@@ -21,6 +23,7 @@ function NotFoundPage() {
         Volver al inicio
       </Link>
     </section>
+    </>
   )
 }
 

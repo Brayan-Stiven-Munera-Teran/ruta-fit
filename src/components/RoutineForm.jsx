@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { FaPlus, FaTrash } from 'react-icons/fa'
+import FormInput from './FormInput'
 
 const CATEGORIES = ['Fuerza', 'Cardio', 'Movilidad', 'Core', 'HIIT']
 const DIFFICULTIES = ['Fácil', 'Media', 'Difícil']
@@ -64,6 +65,13 @@ function RoutineForm({
   )
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const titleRef = useRef(null)
+  const durationRef = useRef(null)
+  const roundsRef = useRef(null)
+  const descriptionRef = useRef(null)
+  const trainerNameRef = useRef(null)
+  const trainerEmailRef = useRef(null)
 
   const clearError = (field) => {
     setErrors((prev) => {
@@ -161,12 +169,26 @@ function RoutineForm({
     return nextErrors
   }
 
+  const focusFirstError = (validationErrors) => {
+    const refOrder = [
+      ['title', titleRef],
+      ['duration', durationRef],
+      ['rounds', roundsRef],
+      ['description', descriptionRef],
+      ['trainerName', trainerNameRef],
+      ['trainerEmail', trainerEmailRef],
+    ]
+    const firstMatch = refOrder.find(([field]) => validationErrors[field])
+    firstMatch?.[1]?.current?.focus()
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     const validationErrors = validate()
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
+      focusFirstError(validationErrors)
       return
     }
 
@@ -180,9 +202,7 @@ function RoutineForm({
       exercises: exercises
         .filter((ex) => ex.name.trim() !== '' && ex.reps.trim() !== '')
         .map((ex) => ({ name: ex.name.trim(), reps: ex.reps.trim() })),
-      steps: steps
-        .map((step) => step.text.trim())
-        .filter(Boolean),
+      steps: steps.map((step) => step.text.trim()).filter(Boolean),
       favorite: initialData?.favorite ?? false,
       createdAt: initialData?.createdAt ?? new Date().toISOString(),
       trainer: {
@@ -209,29 +229,20 @@ function RoutineForm({
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
-      <div>
-        <label
-          htmlFor="title"
-          className="mb-1.5 block text-sm font-semibold text-slate-700"
-        >
-          Título de la rutina
-        </label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          placeholder="Ej. Fuerza Full Body en Casa"
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value)
-            clearError('title')
-          }}
-          className={inputClass('title')}
-        />
-        {errors.title && (
-          <p className="mt-1 text-xs font-medium text-rose-600">{errors.title}</p>
-        )}
-      </div>
+      <FormInput
+        id="title"
+        name="title"
+        type="text"
+        label="Título de la rutina"
+        placeholder="Ej. Fuerza Full Body en Casa"
+        ref={titleRef}
+        value={title}
+        error={errors.title}
+        onChange={(e) => {
+          setTitle(e.target.value)
+          clearError('title')
+        }}
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
@@ -280,58 +291,36 @@ function RoutineForm({
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="duration"
-            className="mb-1.5 block text-sm font-semibold text-slate-700"
-          >
-            Duración (minutos)
-          </label>
-          <input
-            id="duration"
-            name="duration"
-            type="number"
-            min="1"
-            value={duration}
-            onChange={(e) => {
-              setDuration(e.target.value)
-              clearError('duration')
-            }}
-            className={inputClass('duration')}
-          />
-          {errors.duration && (
-            <p className="mt-1 text-xs font-medium text-rose-600">
-              {errors.duration}
-            </p>
-          )}
-        </div>
+        <FormInput
+          id="duration"
+          name="duration"
+          type="number"
+          min="1"
+          label="Duración (minutos)"
+          ref={durationRef}
+          value={duration}
+          error={errors.duration}
+          onChange={(e) => {
+            setDuration(e.target.value)
+            clearError('duration')
+          }}
+        />
 
-        <div>
-          <label
-            htmlFor="rounds"
-            className="mb-1.5 block text-sm font-semibold text-slate-700"
-          >
-            Rondas (1 a 20)
-          </label>
-          <input
-            id="rounds"
-            name="rounds"
-            type="number"
-            min="1"
-            max="20"
-            value={rounds}
-            onChange={(e) => {
-              setRounds(e.target.value)
-              clearError('rounds')
-            }}
-            className={inputClass('rounds')}
-          />
-          {errors.rounds && (
-            <p className="mt-1 text-xs font-medium text-rose-600">
-              {errors.rounds}
-            </p>
-          )}
-        </div>
+        <FormInput
+          id="rounds"
+          name="rounds"
+          type="number"
+          min="1"
+          max="20"
+          label="Rondas (1 a 20)"
+          ref={roundsRef}
+          value={rounds}
+          error={errors.rounds}
+          onChange={(e) => {
+            setRounds(e.target.value)
+            clearError('rounds')
+          }}
+        />
       </div>
 
       <div>
@@ -345,6 +334,7 @@ function RoutineForm({
           id="description"
           name="description"
           rows="3"
+          ref={descriptionRef}
           placeholder="Describe el objetivo y enfoque de la rutina..."
           value={description}
           onChange={(e) => {
@@ -495,76 +485,46 @@ function RoutineForm({
         </legend>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor="trainerName"
-              className="mb-1.5 block text-sm font-semibold text-slate-700"
-            >
-              Nombre
-            </label>
-            <input
-              id="trainerName"
-              name="trainerName"
-              type="text"
-              placeholder="Ej. Camila Restrepo"
-              value={trainerName}
-              onChange={(e) => {
-                setTrainerName(e.target.value)
-                clearError('trainerName')
-              }}
-              className={inputClass('trainerName')}
-            />
-            {errors.trainerName && (
-              <p className="mt-1 text-xs font-medium text-rose-600">
-                {errors.trainerName}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="trainerEmail"
-              className="mb-1.5 block text-sm font-semibold text-slate-700"
-            >
-              Correo electrónico
-            </label>
-            <input
-              id="trainerEmail"
-              name="trainerEmail"
-              type="email"
-              placeholder="entrenador@rutafit.com"
-              value={trainerEmail}
-              onChange={(e) => {
-                setTrainerEmail(e.target.value)
-                clearError('trainerEmail')
-              }}
-              className={inputClass('trainerEmail')}
-            />
-            {errors.trainerEmail && (
-              <p className="mt-1 text-xs font-medium text-rose-600">
-                {errors.trainerEmail}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <label
-            htmlFor="trainerBio"
-            className="mb-1.5 block text-sm font-semibold text-slate-700"
-          >
-            Biografía (opcional)
-          </label>
-          <input
-            id="trainerBio"
-            name="trainerBio"
+          <FormInput
+            id="trainerName"
+            name="trainerName"
             type="text"
-            placeholder="Especialidad o experiencia del entrenador"
-            value={trainerBio}
-            onChange={(e) => setTrainerBio(e.target.value)}
-            className={inputClass('trainerBio')}
+            label="Nombre"
+            placeholder="Ej. Camila Restrepo"
+            ref={trainerNameRef}
+            value={trainerName}
+            error={errors.trainerName}
+            onChange={(e) => {
+              setTrainerName(e.target.value)
+              clearError('trainerName')
+            }}
+          />
+
+          <FormInput
+            id="trainerEmail"
+            name="trainerEmail"
+            type="email"
+            label="Correo electrónico"
+            placeholder="entrenador@rutafit.com"
+            ref={trainerEmailRef}
+            value={trainerEmail}
+            error={errors.trainerEmail}
+            onChange={(e) => {
+              setTrainerEmail(e.target.value)
+              clearError('trainerEmail')
+            }}
           />
         </div>
+
+        <FormInput
+          id="trainerBio"
+          name="trainerBio"
+          type="text"
+          label="Biografía (opcional)"
+          placeholder="Especialidad o experiencia del entrenador"
+          value={trainerBio}
+          onChange={(e) => setTrainerBio(e.target.value)}
+        />
       </fieldset>
 
       <button

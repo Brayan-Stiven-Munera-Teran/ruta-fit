@@ -32,6 +32,8 @@ function RoutineDetailPage() {
 
   return (
     <>
+      <title>{`${routine.title} | Ruta Fit`}</title>
+      <meta name="description" content={routine.description} />
       <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-screen-2xl px-6 py-5 sm:px-8 lg:px-12">
           <Link

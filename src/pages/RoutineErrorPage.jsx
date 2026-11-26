@@ -7,7 +7,9 @@ function RoutineErrorPage() {
     error?.data || error?.message || 'No pudimos cargar la rutina solicitada.'
 
   return (
-    <section className="flex flex-col items-center justify-center px-4 py-20 text-center">
+    <>
+      <title>Rutina no disponible | Ruta Fit</title>
+      <section className="flex flex-col items-center justify-center px-4 py-20 text-center">
       <FaExclamationCircle
         className="mb-4 h-14 w-14 text-rose-500"
         aria-hidden="true"
@@ -23,6 +25,7 @@ function RoutineErrorPage() {
         Volver al listado
       </Link>
     </section>
+    </>
   )
 }
 
