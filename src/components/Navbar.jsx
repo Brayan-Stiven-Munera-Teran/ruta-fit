@@ -26,6 +26,9 @@ function Navbar() {
             <NavLink to="/routines" className={linkClass}>
               Rutinas
             </NavLink>
+            <NavLink to="/add-routine" className={linkClass}>
+              Nueva Rutina
+            </NavLink>
           </div>
         </div>
       </nav>
