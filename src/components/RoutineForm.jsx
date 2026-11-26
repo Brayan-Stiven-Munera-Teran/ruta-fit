@@ -1,31 +1,33 @@
 import { useState } from 'react'
+import { FaPlus, FaTrash } from 'react-icons/fa'
 
 const CATEGORIES = ['Fuerza', 'Cardio', 'Movilidad', 'Core', 'HIIT']
 const DIFFICULTIES = ['Fácil', 'Media', 'Difícil']
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-function formatExercisesText(exercises = []) {
-  return exercises.map((ex) => `${ex.name} | ${ex.reps}`).join('\n')
+function createRowId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 }
 
-function parseExercises(text) {
-  return text
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [rawName, ...rest] = line.split('|')
-      return {
-        name: rawName.trim(),
-        reps: rest.join('|').trim() || '1 serie',
-      }
-    })
+function buildInitialExercises(initialData) {
+  if (initialData?.exercises?.length) {
+    return initialData.exercises.map((ex) => ({
+      id: createRowId(),
+      name: ex.name ?? '',
+      reps: ex.reps ?? '',
+    }))
+  }
+  return [{ id: createRowId(), name: '', reps: '' }]
 }
 
-function parseSteps(text) {
-  return text
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
+function buildInitialSteps(initialData) {
+  if (initialData?.steps?.length) {
+    return initialData.steps.map((text) => ({
+      id: createRowId(),
+      text: text ?? '',
+    }))
+  }
+  return [{ id: createRowId(), text: '' }]
 }
 
 function RoutineForm({
@@ -38,17 +40,19 @@ function RoutineForm({
   const [difficulty, setDifficulty] = useState(
     initialData?.difficulty ?? 'Fácil'
   )
-  const [duration, setDuration] = useState(initialData?.duration ?? 30)
-  const [rounds, setRounds] = useState(initialData?.rounds ?? 3)
+  const [duration, setDuration] = useState(
+    initialData?.duration !== undefined ? String(initialData.duration) : '30'
+  )
+  const [rounds, setRounds] = useState(
+    initialData?.rounds !== undefined ? String(initialData.rounds) : '3'
+  )
   const [description, setDescription] = useState(
     initialData?.description ?? ''
   )
-  const [exercisesText, setExercisesText] = useState(
-    initialData ? formatExercisesText(initialData.exercises) : ''
+  const [exercises, setExercises] = useState(() =>
+    buildInitialExercises(initialData)
   )
-  const [stepsText, setStepsText] = useState(
-    initialData ? initialData.steps.join('\n') : ''
-  )
+  const [steps, setSteps] = useState(() => buildInitialSteps(initialData))
   const [trainerName, setTrainerName] = useState(
     initialData?.trainer?.name ?? ''
   )
@@ -58,10 +62,113 @@ function RoutineForm({
   const [trainerBio, setTrainerBio] = useState(
     initialData?.trainer?.bio ?? ''
   )
+  const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const clearError = (field) => {
+    setErrors((prev) => {
+      if (!prev[field]) return prev
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
+
+  const handleExerciseChange = (id, field, value) => {
+    setExercises((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+    )
+    clearError('exercises')
+  }
+
+  const handleAddExercise = () => {
+    setExercises((prev) => [...prev, { id: createRowId(), name: '', reps: '' }])
+  }
+
+  const handleRemoveExercise = (id) => {
+    setExercises((prev) =>
+      prev.length > 1 ? prev.filter((item) => item.id !== id) : prev
+    )
+  }
+
+  const handleStepChange = (id, value) => {
+    setSteps((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, text: value } : item))
+    )
+    clearError('steps')
+  }
+
+  const handleAddStep = () => {
+    setSteps((prev) => [...prev, { id: createRowId(), text: '' }])
+  }
+
+  const handleRemoveStep = (id) => {
+    setSteps((prev) =>
+      prev.length > 1 ? prev.filter((item) => item.id !== id) : prev
+    )
+  }
+
+  const validate = () => {
+    const nextErrors = {}
+
+    if (title.trim().length < 3) {
+      nextErrors.title = 'Ingresa un título de al menos 3 caracteres.'
+    }
+
+    const parsedDuration = Number(duration)
+    if (!Number.isInteger(parsedDuration) || parsedDuration <= 0) {
+      nextErrors.duration = 'La duración debe ser un número entero mayor a 0.'
+    }
+
+    const parsedRounds = Number(rounds)
+    if (!Number.isInteger(parsedRounds) || parsedRounds < 1 || parsedRounds > 20) {
+      nextErrors.rounds = 'Las rondas deben ser un número entero entre 1 y 20.'
+    }
+
+    if (description.trim().length < 10) {
+      nextErrors.description = 'Escribe una descripción de al menos 10 caracteres.'
+    }
+
+    const validExercises = exercises.filter(
+      (ex) => ex.name.trim() !== '' && ex.reps.trim() !== ''
+    )
+    const hasIncompleteExercise = exercises.some(
+      (ex) =>
+        (ex.name.trim() !== '' && ex.reps.trim() === '') ||
+        (ex.name.trim() === '' && ex.reps.trim() !== '')
+    )
+    if (validExercises.length === 0) {
+      nextErrors.exercises =
+        'Agrega al menos 1 ejercicio con su nombre y series/tiempo.'
+    } else if (hasIncompleteExercise) {
+      nextErrors.exercises =
+        'Completa tanto el nombre como las series/tiempo en cada fila de ejercicio.'
+    }
+
+    const validSteps = steps.filter((step) => step.text.trim() !== '')
+    if (validSteps.length === 0) {
+      nextErrors.steps = 'Agrega al menos 1 paso de ejecución.'
+    }
+
+    if (trainerName.trim().length < 2) {
+      nextErrors.trainerName = 'Ingresa el nombre del entrenador.'
+    }
+
+    if (!EMAIL_REGEX.test(trainerEmail.trim())) {
+      nextErrors.trainerEmail = 'Ingresa un correo electrónico válido.'
+    }
+
+    return nextErrors
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    const validationErrors = validate()
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
+      return
+    }
 
     const payload = {
       title: title.trim(),
@@ -70,8 +177,12 @@ function RoutineForm({
       duration: Number(duration),
       rounds: Number(rounds),
       description: description.trim(),
-      exercises: parseExercises(exercisesText),
-      steps: parseSteps(stepsText),
+      exercises: exercises
+        .filter((ex) => ex.name.trim() !== '' && ex.reps.trim() !== '')
+        .map((ex) => ({ name: ex.name.trim(), reps: ex.reps.trim() })),
+      steps: steps
+        .map((step) => step.text.trim())
+        .filter(Boolean),
       favorite: initialData?.favorite ?? false,
       createdAt: initialData?.createdAt ?? new Date().toISOString(),
       trainer: {
@@ -89,8 +200,15 @@ function RoutineForm({
     }
   }
 
+  const inputClass = (field) =>
+    `w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
+      errors[field]
+        ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/30'
+        : 'border-slate-300 focus:border-emerald-600 focus:ring-emerald-500/30'
+    }`
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
       <div>
         <label
           htmlFor="title"
@@ -102,12 +220,17 @@ function RoutineForm({
           id="title"
           name="title"
           type="text"
-          required
           placeholder="Ej. Fuerza Full Body en Casa"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+          onChange={(e) => {
+            setTitle(e.target.value)
+            clearError('title')
+          }}
+          className={inputClass('title')}
         />
+        {errors.title && (
+          <p className="mt-1 text-xs font-medium text-rose-600">{errors.title}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -121,10 +244,9 @@ function RoutineForm({
           <select
             id="category"
             name="category"
-            required
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+            className={inputClass('category')}
           >
             {CATEGORIES.map((item) => (
               <option key={item} value={item}>
@@ -144,10 +266,9 @@ function RoutineForm({
           <select
             id="difficulty"
             name="difficulty"
-            required
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+            className={inputClass('difficulty')}
           >
             {DIFFICULTIES.map((item) => (
               <option key={item} value={item}>
@@ -171,11 +292,18 @@ function RoutineForm({
             name="duration"
             type="number"
             min="1"
-            required
             value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+            onChange={(e) => {
+              setDuration(e.target.value)
+              clearError('duration')
+            }}
+            className={inputClass('duration')}
           />
+          {errors.duration && (
+            <p className="mt-1 text-xs font-medium text-rose-600">
+              {errors.duration}
+            </p>
+          )}
         </div>
 
         <div>
@@ -191,11 +319,18 @@ function RoutineForm({
             type="number"
             min="1"
             max="20"
-            required
             value={rounds}
-            onChange={(e) => setRounds(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+            onChange={(e) => {
+              setRounds(e.target.value)
+              clearError('rounds')
+            }}
+            className={inputClass('rounds')}
           />
+          {errors.rounds && (
+            <p className="mt-1 text-xs font-medium text-rose-600">
+              {errors.rounds}
+            </p>
+          )}
         </div>
       </div>
 
@@ -210,51 +345,149 @@ function RoutineForm({
           id="description"
           name="description"
           rows="3"
-          required
           placeholder="Describe el objetivo y enfoque de la rutina..."
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+          onChange={(e) => {
+            setDescription(e.target.value)
+            clearError('description')
+          }}
+          className={inputClass('description')}
         />
+        {errors.description && (
+          <p className="mt-1 text-xs font-medium text-rose-600">
+            {errors.description}
+          </p>
+        )}
       </div>
 
-      <div>
-        <label
-          htmlFor="exercises"
-          className="mb-1.5 block text-sm font-semibold text-slate-700"
-        >
-          Ejercicios (uno por línea: Nombre | Series o tiempo)
-        </label>
-        <textarea
-          id="exercises"
-          name="exercises"
-          rows="4"
-          required
-          placeholder={'Sentadillas | 15 reps\nPlancha frontal | 45 seg'}
-          value={exercisesText}
-          onChange={(e) => setExercisesText(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-        />
-      </div>
+      <fieldset className="space-y-3 border-t border-slate-200 pt-5">
+        <div className="flex items-center justify-between gap-2">
+          <legend className="text-sm font-bold text-slate-900">
+            Ejercicios
+          </legend>
+          <button
+            type="button"
+            onClick={handleAddExercise}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+          >
+            <FaPlus aria-hidden="true" />
+            Agregar ejercicio
+          </button>
+        </div>
 
-      <div>
-        <label
-          htmlFor="steps"
-          className="mb-1.5 block text-sm font-semibold text-slate-700"
-        >
-          Pasos (uno por línea)
-        </label>
-        <textarea
-          id="steps"
-          name="steps"
-          rows="4"
-          required
-          placeholder={'Calienta 5 minutos.\nDescansa 60 segundos entre rondas.'}
-          value={stepsText}
-          onChange={(e) => setStepsText(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-        />
-      </div>
+        <div className="space-y-2.5">
+          {exercises.map((exercise, index) => (
+            <div
+              key={exercise.id}
+              className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_180px_auto]"
+            >
+              <div>
+                <label
+                  htmlFor={`exercise-name-${exercise.id}`}
+                  className="sr-only"
+                >
+                  Nombre del ejercicio {index + 1}
+                </label>
+                <input
+                  id={`exercise-name-${exercise.id}`}
+                  type="text"
+                  placeholder="Ej. Sentadillas profundas"
+                  value={exercise.name}
+                  onChange={(e) =>
+                    handleExerciseChange(exercise.id, 'name', e.target.value)
+                  }
+                  className={inputClass('exercises')}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor={`exercise-reps-${exercise.id}`}
+                  className="sr-only"
+                >
+                  Series o tiempo del ejercicio {index + 1}
+                </label>
+                <input
+                  id={`exercise-reps-${exercise.id}`}
+                  type="text"
+                  placeholder="Ej. 15 reps o 40 seg"
+                  value={exercise.reps}
+                  onChange={(e) =>
+                    handleExerciseChange(exercise.id, 'reps', e.target.value)
+                  }
+                  className={inputClass('exercises')}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleRemoveExercise(exercise.id)}
+                disabled={exercises.length === 1}
+                aria-label={`Quitar ejercicio ${index + 1}`}
+                className="inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <FaTrash aria-hidden="true" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {errors.exercises && (
+          <p className="text-xs font-medium text-rose-600">{errors.exercises}</p>
+        )}
+      </fieldset>
+
+      <fieldset className="space-y-3 border-t border-slate-200 pt-5">
+        <div className="flex items-center justify-between gap-2">
+          <legend className="text-sm font-bold text-slate-900">
+            Pasos de ejecución
+          </legend>
+          <button
+            type="button"
+            onClick={handleAddStep}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+          >
+            <FaPlus aria-hidden="true" />
+            Agregar paso
+          </button>
+        </div>
+
+        <div className="space-y-2.5">
+          {steps.map((step, index) => (
+            <div key={step.id} className="flex items-center gap-2">
+              <span className="w-6 text-center text-xs font-bold text-slate-500">
+                {index + 1}.
+              </span>
+              <div className="flex-1">
+                <label htmlFor={`step-${step.id}`} className="sr-only">
+                  Paso {index + 1}
+                </label>
+                <input
+                  id={`step-${step.id}`}
+                  type="text"
+                  placeholder="Describe este paso de la rutina..."
+                  value={step.text}
+                  onChange={(e) => handleStepChange(step.id, e.target.value)}
+                  className={inputClass('steps')}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => handleRemoveStep(step.id)}
+                disabled={steps.length === 1}
+                aria-label={`Quitar paso ${index + 1}`}
+                className="inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <FaTrash aria-hidden="true" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {errors.steps && (
+          <p className="text-xs font-medium text-rose-600">{errors.steps}</p>
+        )}
+      </fieldset>
 
       <fieldset className="space-y-4 border-t border-slate-200 pt-5">
         <legend className="text-base font-bold text-slate-900">
@@ -273,12 +506,19 @@ function RoutineForm({
               id="trainerName"
               name="trainerName"
               type="text"
-              required
               placeholder="Ej. Camila Restrepo"
               value={trainerName}
-              onChange={(e) => setTrainerName(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              onChange={(e) => {
+                setTrainerName(e.target.value)
+                clearError('trainerName')
+              }}
+              className={inputClass('trainerName')}
             />
+            {errors.trainerName && (
+              <p className="mt-1 text-xs font-medium text-rose-600">
+                {errors.trainerName}
+              </p>
+            )}
           </div>
 
           <div>
@@ -292,12 +532,19 @@ function RoutineForm({
               id="trainerEmail"
               name="trainerEmail"
               type="email"
-              required
               placeholder="entrenador@rutafit.com"
               value={trainerEmail}
-              onChange={(e) => setTrainerEmail(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              onChange={(e) => {
+                setTrainerEmail(e.target.value)
+                clearError('trainerEmail')
+              }}
+              className={inputClass('trainerEmail')}
             />
+            {errors.trainerEmail && (
+              <p className="mt-1 text-xs font-medium text-rose-600">
+                {errors.trainerEmail}
+              </p>
+            )}
           </div>
         </div>
 
@@ -315,7 +562,7 @@ function RoutineForm({
             placeholder="Especialidad o experiencia del entrenador"
             value={trainerBio}
             onChange={(e) => setTrainerBio(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+            className={inputClass('trainerBio')}
           />
         </div>
       </fieldset>

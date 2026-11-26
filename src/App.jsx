@@ -5,6 +5,7 @@ import RoutinesPage from './pages/RoutinesPage'
 import RoutineDetailPage from './pages/RoutineDetailPage'
 import AddRoutinePage from './pages/AddRoutinePage'
 import EditRoutinePage from './pages/EditRoutinePage'
+import FavoritesPage from './pages/FavoritesPage'
 import RoutineErrorPage from './pages/RoutineErrorPage'
 import NotFoundPage from './pages/NotFoundPage'
 import { getRoutineById } from './services/routinesApi'
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
         errorElement: <RoutineErrorPage />,
       },
       { path: 'add-routine', element: <AddRoutinePage /> },
+      { path: 'favorites', element: <FavoritesPage /> },
       {
         path: 'edit-routine/:id',
         element: <EditRoutinePage />,
